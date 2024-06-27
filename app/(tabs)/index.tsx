@@ -1,7 +1,6 @@
 import Modal from '@/components/AddModal';
 import React, { useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import uuid from "react-native-uuid";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { ThemedText } from '../../components/ThemedText';
 import { Task } from '../../constants/types'; // Update the import path
@@ -9,9 +8,9 @@ import TaskComponent from '../task'; // Update the import path
 
 export default function HomeScreen() {
   var tasks: Task[] = [];
-  tasks.push(new Task(uuid.v4(), "Task 1", false));
-  tasks.push(new Task(uuid.v4(), "Task 2", true));
-  tasks.push(new Task(uuid.v4(), "Task 3", false));
+  // tasks.push(new Task(uuid.v4(), "Task 1", false));
+  // tasks.push(new Task(uuid.v4(), "Task 2", true));
+  // tasks.push(new Task(uuid.v4(), "Task 3", false));
 
   const [taskList, setTaskList] = useState<Task[]>(tasks);
   const [modalVisible, setModalVisible] = useState(false);
@@ -31,11 +30,15 @@ export default function HomeScreen() {
     setModalVisible(true);
   }
 
+  const addNewTask = (task: Task) => {
+    setTaskList([...taskList, task]);
+  }
+
   return (
     <SafeAreaView style={{
       height: '100%',
     }}>
-      <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} transparent={true}/>
+      <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} addTask={addNewTask}/>
       
       <ScrollView>
         <View style={{
