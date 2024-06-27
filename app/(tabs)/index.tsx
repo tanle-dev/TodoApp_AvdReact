@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import Modal from '@/components/AddModal';
+import React, { useState } from 'react';
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import uuid from "react-native-uuid";
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import { ThemedText } from '../../components/ThemedText';
 import { Task } from '../../constants/types'; // Update the import path
 import TaskComponent from '../task'; // Update the import path
@@ -12,6 +14,7 @@ export default function HomeScreen() {
   tasks.push(new Task(uuid.v4(), "Task 3", false));
 
   const [taskList, setTaskList] = useState<Task[]>(tasks);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleStateToggle = (task: Task) => {
     // Update the task object
@@ -24,10 +27,37 @@ export default function HomeScreen() {
     setTaskList(taskList.filter((t) => t.id !== task.id));
   }
 
+  const handleAddBtnClick = () => {
+    setModalVisible(true);
+  }
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{
+      height: '100%',
+    }}>
+      <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} transparent={true}/>
+      
       <ScrollView>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 8,
+          marginBottom: 8,
+          backgroundColor: '#fefae0',
+        }}>
           <ThemedText style={styles.titleContainer} type="title">Todo App</ThemedText>
+
+          <Pressable style={{
+            marginEnd: 8,
+            padding: 12,
+            backgroundColor: '#b7e4c7',
+            borderRadius: 50,
+          }} onPress={handleAddBtnClick}>
+            <Icon name="plus" size={25} color="green"/>
+          </Pressable>
+        </View>
+          
 
           {taskList.map((task) => (
             <TaskComponent key={task.id.toString()} task={task} stateToggle={handleStateToggle} deleteTask={deleteTask}/>
@@ -45,7 +75,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fefae0',
     padding: 8,
     gap: 8,
-    marginBottom: 8,
   },
   stepContainer: {
     gap: 8,
