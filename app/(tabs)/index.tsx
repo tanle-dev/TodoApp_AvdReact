@@ -1,68 +1,37 @@
+import { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
-
+import uuid from "react-native-uuid";
 import { ThemedText } from '../../components/ThemedText';
-import { ThemedView } from '../../components/ThemedView';
+import { Task } from '../../constants/types'; // Update the import path
+import TaskComponent from '../task'; // Update the import path
 
 export default function HomeScreen() {
-  return (
-    // <ParallaxScrollView
-    //   headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-    //   headerImage={
-    //     <Image
-    //       source={require('@/assets/images/partial-react-logo.png')}
-    //       style={styles.reactLogo}
-    //     />
-    //   }>
-    //   <ThemedView style={styles.titleContainer}>
-    //     <ThemedText type="title">Welcome!</ThemedText>
-    //     <HelloWave />
-    //   </ThemedView>
-    //   <ThemedView style={styles.stepContainer}>
-    //     <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-    //     <ThemedText>
-    //       Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-    //       Press{' '}
-    //       <ThemedText type="defaultSemiBold">
-    //         {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-    //       </ThemedText>{' '}
-    //       to open developer tools.
-    //     </ThemedText>
-    //   </ThemedView>
-    //   <ThemedView style={styles.stepContainer}>
-    //     <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-    //     <ThemedText>
-    //       Tap the Explore tab to learn more about what's included in this starter app.
-    //     </ThemedText>
-    //   </ThemedView>
-    //   <ThemedView style={styles.stepContainer}>
-    //     <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-    //     <ThemedText>
-    //       When you're ready, run{' '}
-    //       <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-    //       <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-    //       <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-    //       <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-    //     </ThemedText>
-    //   </ThemedView>
-    // </ParallaxScrollView>
+  var tasks: Task[] = [];
+  tasks.push(new Task(uuid.v4(), "Task 1", false));
+  tasks.push(new Task(uuid.v4(), "Task 2", true));
+  tasks.push(new Task(uuid.v4(), "Task 3", false));
 
+  const [taskList, setTaskList] = useState<Task[]>(tasks);
+
+  const handleStateToggle = (task: Task) => {
+    // Update the task object
+    task.completed = !task.completed;
+    setTaskList([...taskList]);
+  }
+
+  const deleteTask = (task: Task) => {
+    // Remove the task object
+    setTaskList(taskList.filter((t) => t.id !== task.id));
+  }
+
+  return (
     <SafeAreaView>
       <ScrollView>
-        {/* <ThemedView> */}
           <ThemedText style={styles.titleContainer} type="title">Todo App</ThemedText>
-          <ThemedView>
-            <ThemedText type="subtitle">Task 1</ThemedText>
-            <ThemedText>Complete the coding assignment</ThemedText>
-          </ThemedView>
-          <ThemedView>
-            <ThemedText type="subtitle">Task 2</ThemedText>
-            <ThemedText>Submit the coding assignment</ThemedText>
-          </ThemedView>
-          <ThemedView>
-            <ThemedText type="subtitle">Task 3</ThemedText>
-            <ThemedText>Prepare for the interview</ThemedText>
-          </ThemedView>
-        {/* </ThemedView> */}
+
+          {taskList.map((task) => (
+            <TaskComponent key={task.id.toString()} task={task} stateToggle={handleStateToggle} deleteTask={deleteTask}/>
+          ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -76,6 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fefae0',
     padding: 8,
     gap: 8,
+    marginBottom: 8,
   },
   stepContainer: {
     gap: 8,
