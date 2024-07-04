@@ -1,5 +1,6 @@
 import Modal from '@/components/AddModal';
-import React, { useState } from 'react';
+import useFirebase from '@/hooks/useFirebase';
+import React, { useEffect, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { ThemedText } from '../../components/ThemedText';
@@ -7,23 +8,29 @@ import { Task } from '../../constants/types'; // Update the import path
 import TaskComponent from '../task'; // Update the import path
 
 export default function HomeScreen() {
-  var tasks: Task[] = [];
-  // tasks.push(new Task(uuid.v4(), "Task 1", false));
-  // tasks.push(new Task(uuid.v4(), "Task 2", true));
-  // tasks.push(new Task(uuid.v4(), "Task 3", false));
 
-  const [taskList, setTaskList] = useState<Task[]>(tasks);
+  const [taskList, setTaskList] = useState<Task[]>([] as Task[]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  useEffect(() => {
+    useFirebase().fetchData().then((data) => {
+      if (data !== undefined) setTaskList(data as Task[]);
+    });
+  }, []);
+  
   const handleStateToggle = (task: Task) => {
     // Update the task object
     task.completed = !task.completed;
+    useFirebase().updateData(task.id, task)
+    let taskIndex = taskList.findIndex((t) => t.id === task.id);
+    taskList[taskIndex] = task;
     setTaskList([...taskList]);
   }
 
   const deleteTask = (task: Task) => {
     // Remove the task object
     setTaskList(taskList.filter((t) => t.id !== task.id));
+    useFirebase().deleteData(task.id);
   }
 
   const handleAddBtnClick = () => {

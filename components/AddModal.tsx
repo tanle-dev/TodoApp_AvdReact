@@ -1,9 +1,9 @@
 
 
 import { Task } from '@/constants/types';
+import useFirebase from '@/hooks/useFirebase';
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Switch, TextInput, View } from 'react-native';
-import uuid from "react-native-uuid";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { ThemedText } from './ThemedText';
 
@@ -32,15 +32,26 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, addTask}) => {
             return;
         }
 
-        addTask(new Task(
-            uuid.v4(),
-            taskTitle,
-            isCompleted,
-        ));
+        // Assuming Task is a class with properties: id, title, and isCompleted
+        const newTask: Task = {
+            id: '', // Generate a new UUID for the task
+            title: taskTitle,
+            completed: isCompleted, // Add the completed property and set it to false
+        };
 
-        setTaskTitle('');
-        setIsCompleted(false);
-        handleClose();
+        useFirebase().addData(newTask)
+        .then((data) => {
+            // Ensure addTask can handle a plain object
+            console.log(data);
+            if (data !== undefined) newTask.id = data as string;
+            addTask(newTask);
+            setTaskTitle('');
+            setIsCompleted(false);
+            handleClose();
+        })
+        .catch((error) => {
+            Alert.alert('Error', 'Failed to add task');
+        });
     }
 
     if (!isOpen) {
