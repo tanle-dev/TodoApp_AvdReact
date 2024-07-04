@@ -5,10 +5,12 @@ import { Pressable, Switch, View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
 export default function TaskComponent({task, stateToggle, deleteTask}: {task: Task, stateToggle: (task: Task) => void, deleteTask: (task: Task) => void}) {
+    
 
     const handleStateToggle = () => {
         // Update the task object
         stateToggle(task);
+
     }
 
     const handleDeleteTask = () => {
